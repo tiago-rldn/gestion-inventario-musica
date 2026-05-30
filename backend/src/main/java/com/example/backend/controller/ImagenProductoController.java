@@ -26,12 +26,12 @@ public class ImagenProductoController {
     }
 
     @GetMapping("/producto/{productoId}")
-    public ResponseEntity<List<ImagenProducto>> obtenerPorProducto(@PathVariable UUID productoId) {
+    public ResponseEntity<List<ImagenProducto>> getImagenesByProducto(@PathVariable UUID productoId) {
         return ResponseEntity.ok(imagenProductoService.obtenerPorProducto(productoId));
     }
 
     @PostMapping
-    public ResponseEntity<ImagenProducto> agregarImagen(@RequestBody ImagenProducto imagen) {
+    public ResponseEntity<ImagenProducto> createImagen(@RequestBody ImagenProducto imagen) {
         return ResponseEntity.status(HttpStatus.CREATED).body(imagenProductoService.guardarImagen(imagen));
     }
 }

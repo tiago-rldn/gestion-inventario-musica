@@ -26,12 +26,12 @@ public class MovimientoStockController {
     }
 
     @GetMapping("/producto/{productoId}")
-    public ResponseEntity<List<MovimientoStock>> obtenerPorProducto(@PathVariable UUID productoId) {
+    public ResponseEntity<List<MovimientoStock>> getMovimientosByProducto(@PathVariable UUID productoId) {
         return ResponseEntity.ok(movimientoStockService.obtenerPorProducto(productoId));
     }
 
     @PostMapping
-    public ResponseEntity<MovimientoStock> registrarMovimiento(@RequestBody MovimientoStock movimiento) {
+    public ResponseEntity<MovimientoStock> newMovimiento(@RequestBody MovimientoStock movimiento) {
         return ResponseEntity.status(HttpStatus.CREATED).body(movimientoStockService.registrarMovimiento(movimiento));
     }
 }

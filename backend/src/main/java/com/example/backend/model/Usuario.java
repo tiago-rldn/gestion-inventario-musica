@@ -4,15 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -28,18 +26,11 @@ public class Usuario {
     private String username;
 
     @Column(nullable = false)
+    @JsonIgnoreProperties({"password", "hibernateLazyInitializer", "handler"})
     private String password;
 
     @Column(nullable = false)
     private Boolean activo = true;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "usuario_rol",
-        joinColumns = @JoinColumn(name = "usuario_id"),
-        inverseJoinColumns = @JoinColumn(name = "rol_id")
-    )
-    private List<Rol> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "usuario")
     private List<MovimientoStock> movimientosRealizados = new ArrayList<>();
@@ -78,13 +69,6 @@ public class Usuario {
 
     public void setActivo(Boolean activo) {
         this.activo = activo;
-    }
-    public List<Rol> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Rol> roles) {
-        this.roles = roles;
     }
 
     public List<MovimientoStock> getMovimientosRealizados() {

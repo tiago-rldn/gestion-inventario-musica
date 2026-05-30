@@ -1,12 +1,17 @@
 package com.example.backend.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -17,7 +22,7 @@ import jakarta.persistence.Table;
 @Table(name = "categorias")
 public class Categoria {
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(updatable = false, nullable = false)
     private UUID id;
 
@@ -27,15 +32,18 @@ public class Categoria {
     @Column(length = 500)
     private String descripcion;
 
-    @ManyToOne(fetch=jakarta.persistence.FetchType.LAZY)
+    @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name = "categoria_padre_id")
+    @JsonIgnoreProperties({"subcategorias", "hibernateLazyInitializer", "handler"}) // Evita la serialización de subcategorias para prevenir ciclos infinitos
     private Categoria categoriaPadre;
 
     @OneToMany(mappedBy = "categoriaPadre", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Categoria> subcategorias = new java.util.ArrayList<>();
+    @JsonIgnoreProperties("categoriaPadre") // Evita la serialización de categoriaPadre para prevenir ciclos infinitos
+    private List<Categoria> subcategorias = new ArrayList<>();
 
     @OneToMany(mappedBy = "categoria")
-    private List<Producto> productos = new java.util.ArrayList<>();
+    @JsonIgnoreProperties("categoria")
+    private List<Producto> productos = new ArrayList<>();
 
     public Categoria() {
     }
