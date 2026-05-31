@@ -67,6 +67,7 @@ public class Producto {
     private List<ImagenProducto> imagenes = new ArrayList<>();
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties
     private List<MovimientoStock> historialStock = new ArrayList<>();
 
     public Producto() {}

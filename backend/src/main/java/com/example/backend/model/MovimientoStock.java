@@ -3,6 +3,8 @@ package com.example.backend.model;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -40,10 +42,18 @@ public class MovimientoStock {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "producto_id", nullable = false)
+    @JsonIgnoreProperties({
+        "historialStock", 
+        "categoria", 
+        "imagenes", 
+        "hibernateLazyInitializer", 
+        "handler"
+    })
     private Producto producto;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonIgnoreProperties({"movimientosRealizados", "hibernateLazyInitializer", "handler"})
     private Usuario usuario;
 
     public MovimientoStock() {}

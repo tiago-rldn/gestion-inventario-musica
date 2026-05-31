@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.backend.dto.CategoriaTreeResponse;
+import com.example.backend.dto.NewCategoriaRequest;
+import com.example.backend.dto.NewCategoriaResponse;
 import com.example.backend.model.Categoria;
 import com.example.backend.repository.CategoriaRepository;
 
@@ -15,16 +18,26 @@ public class CategoriaService {
         this.categoriaRepository = categoriaRepository;
     }
 
-    public List<Categoria> getAllCategorias() {
-        return categoriaRepository.findByCategoriaPadreIsNull().orElseThrow(() -> new RuntimeException("Categorías no encontradas"));
+    public List<CategoriaTreeResponse> getAllCategorias() {
+        List<Categoria> raices = categoriaRepository.findByCategoriaPadreIsNull();
+        return raices.stream().map(this::mapearArbol).toList();
     }
 
-    public Categoria getCategoriaById(java.util.UUID id) {
-        return categoriaRepository.findById(id).orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+    public NewCategoriaResponse getCategoriaById(java.util.UUID id) {
+        return mapearRespuesta(categoriaRepository.findById(id).orElseThrow(() -> new RuntimeException("Categoría no encontrada")));
     }
 
-    public Categoria createCategoria(Categoria categoria) {
-        return categoriaRepository.save(categoria);
+    public NewCategoriaResponse createCategoria(NewCategoriaRequest categoria) {
+        Categoria nuevaCategoria = new Categoria();
+        nuevaCategoria.setNombre(categoria.nombre());
+        nuevaCategoria.setDescripcion(categoria.descripcion());
+        if (categoria.categoriaPadreId() != null) {
+            Categoria categoriaPadre = categoriaRepository.findById(categoria.categoriaPadreId())
+                    .orElseThrow(() -> new RuntimeException("Categoría padre no encontrada"));
+            nuevaCategoria.setCategoriaPadre(categoriaPadre);
+        }
+
+        return mapearRespuesta(categoriaRepository.save(nuevaCategoria));
     }
 
     public void deleteCategoria(java.util.UUID id) {
@@ -32,5 +45,24 @@ public class CategoriaService {
             throw new RuntimeException("Categoría no encontrada");
         }
         categoriaRepository.deleteById(id);
+    }
+
+    private CategoriaTreeResponse mapearArbol(Categoria cat) {
+        return new CategoriaTreeResponse(
+                cat.getId(),
+                cat.getNombre(),
+                cat.getDescripcion(),
+                cat.getSubcategorias().stream().map(this::mapearArbol).toList(), // Recursividad
+                cat.getProductos().size() // Contamos los productos
+        );
+    }
+
+    private NewCategoriaResponse mapearRespuesta(Categoria cat) {
+        return new NewCategoriaResponse(
+                cat.getId(),
+                cat.getNombre(),
+                cat.getDescripcion(),
+                cat.getCategoriaPadre() != null ? cat.getCategoriaPadre().getId() : null
+        );
     }
 }

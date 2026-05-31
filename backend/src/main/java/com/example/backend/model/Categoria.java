@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,15 +32,12 @@ public class Categoria {
 
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name = "categoria_padre_id")
-    @JsonIgnoreProperties({"subcategorias", "hibernateLazyInitializer", "handler"}) // Evita la serialización de subcategorias para prevenir ciclos infinitos
     private Categoria categoriaPadre;
 
     @OneToMany(mappedBy = "categoriaPadre", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("categoriaPadre") // Evita la serialización de categoriaPadre para prevenir ciclos infinitos
     private List<Categoria> subcategorias = new ArrayList<>();
 
     @OneToMany(mappedBy = "categoria")
-    @JsonIgnoreProperties("categoria")
     private List<Producto> productos = new ArrayList<>();
 
     public Categoria() {

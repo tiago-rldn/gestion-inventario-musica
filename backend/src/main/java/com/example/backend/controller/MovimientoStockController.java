@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.dto.MovimientoRequest;
+import com.example.backend.dto.MovimientoResponse;
 import com.example.backend.model.MovimientoStock;
 import com.example.backend.service.MovimientoStockService;
 
@@ -26,12 +29,18 @@ public class MovimientoStockController {
     }
 
     @GetMapping("/producto/{productoId}")
-    public ResponseEntity<List<MovimientoStock>> getMovimientosByProducto(@PathVariable UUID productoId) {
+    public ResponseEntity<List<MovimientoResponse>> getMovimientosByProducto(@PathVariable UUID productoId) {
         return ResponseEntity.ok(movimientoStockService.obtenerPorProducto(productoId));
     }
 
     @PostMapping
-    public ResponseEntity<MovimientoStock> newMovimiento(@RequestBody MovimientoStock movimiento) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(movimientoStockService.registrarMovimiento(movimiento));
+    public ResponseEntity<MovimientoResponse> newMovimiento(
+        @RequestBody MovimientoRequest request,
+        Principal principal
+    ) {
+        String username = principal.getName();
+
+        MovimientoResponse response = movimientoStockService.registrarMovimiento(request, principal.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
