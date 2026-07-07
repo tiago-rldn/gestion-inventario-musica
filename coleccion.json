@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "API Gestión Inventario Música",
-    "description": "Colección adaptada para la importación en ATAC Terminal Client",
+    "description": "Colección completa generada a partir de los controladores unificados con DTOs",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -9,12 +9,10 @@
       "name": "1. Autenticación",
       "item": [
         {
-          "name": "A. Iniciar Sesión (Login)",
+          "name": "Iniciar Sesión (Login)",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"username\": \"prueba\",\n  \"password\": \"prueba\"\n}"
@@ -31,26 +29,24 @@
       ]
     },
     {
-      "name": "2. Categorías",
+      "name": "2. Usuarios",
       "item": [
         {
-          "name": "A. Obtener Árbol de Categorías",
+          "name": "Obtener Todos los Usuarios",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
             "url": {
-              "raw": "http://localhost:8080/api/categorias",
+              "raw": "http://localhost:8080/api/usuarios",
               "protocol": "http",
               "host": ["localhost"],
               "port": "8080",
-              "path": ["api", "categorias"]
+              "path": ["api", "usuarios"]
             }
           }
         },
         {
-          "name": "B. Crear Categoría Raíz",
+          "name": "Crear Usuario",
           "request": {
             "method": "POST",
             "header": [
@@ -59,61 +55,52 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Música\",\n  \"descripcion\": \"Formatos físicos de audio y video\"\n}"
+              "raw": "{\n  \"username\": \"nuevo_usuario\",\n  \"password\": \"contraseña_segura\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8080/api/categorias",
+              "raw": "http://localhost:8080/api/usuarios",
               "protocol": "http",
               "host": ["localhost"],
               "port": "8080",
-              "path": ["api", "categorias"]
-            }
-          }
-        },
-        {
-          "name": "C. Crear Subcategoría",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Vinilo\",\n  \"descripcion\": \"Formato físico musical\",\n  \"categoriaPadre\": {\n    \"id\": \"{{categoria_padre_id}}\"\n  }\n}"
-            },
-            "url": {
-              "raw": "http://localhost:8080/api/categorias",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8080",
-              "path": ["api", "categorias"]
+              "path": ["api", "usuarios"]
             }
           }
         }
       ]
     },
     {
-      "name": "3. Productos",
+      "name": "3. Categorías",
       "item": [
         {
-          "name": "A. Consultar Rama de Productos",
+          "name": "Obtener Todas (Árbol)",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
             "url": {
-              "raw": "http://localhost:8080/api/productos/categoria/{{categoria_id}}/rama",
+              "raw": "http://localhost:8080/api/categorias",
               "protocol": "http",
               "host": ["localhost"],
               "port": "8080",
-              "path": ["api", "productos", "categoria", "{{categoria_id}}", "rama"]
+              "path": ["api", "categorias"]
             }
           }
         },
         {
-          "name": "B. Registrar Nuevo Producto",
+          "name": "Obtener por ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": {
+              "raw": "http://localhost:8080/api/categorias/{{categoria_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "categorias", "{{categoria_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Crear Categoría",
           "request": {
             "method": "POST",
             "header": [
@@ -122,7 +109,89 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"sku\": \"THBTLS-1-VIN\",\n  \"nombre\": \"1\",\n  \"descripcion\": \"The Beatles 1 - Álbum Remasterizado\",\n  \"precio\": 60000.00,\n  \"cantidadStock\": 20,\n  \"artistaBanda\": \"The Beatles\",\n  \"formatoMusica\": \"Vinilo\",\n  \"categoria\": {\n    \"id\": \"{{categoria_id}}\"\n  }\n}"
+              "raw": "{\n  \"nombre\": \"Rock Clásico\",\n  \"descripcion\": \"Discos de rock de los años 60s y 70s\",\n  \"categoriaPadreId\": \"{{categoria_padre_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/categorias",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "categorias"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Categoría",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": {
+              "raw": "http://localhost:8080/api/categorias/{{categoria_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "categorias", "{{categoria_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Productos",
+      "item": [
+        {
+          "name": "Obtener Todos",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": {
+              "raw": "http://localhost:8080/api/productos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "productos"]
+            }
+          }
+        },
+        {
+          "name": "Obtener por ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": {
+              "raw": "http://localhost:8080/api/productos/{{producto_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "productos", "{{producto_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Obtener por Categoría",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": {
+              "raw": "http://localhost:8080/api/productos/categoria/{{categoria_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "productos", "categoria", "{{categoria_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Crear Producto",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"PROD-001\",\n  \"nombre\": \"Abbey Road\",\n  \"descripcion\": \"Edición 50 Aniversario\",\n  \"precio\": 65000.00,\n  \"cantidadStock\": 10,\n  \"artistaBanda\": \"The Beatles\",\n  \"formatoMusica\": \"Vinilo\",\n  \"tallePrenda\": null,\n  \"color\": null,\n  \"categoriaId\": \"{{categoria_id}}\"\n}"
             },
             "url": {
               "raw": "http://localhost:8080/api/productos",
@@ -134,7 +203,7 @@
           }
         },
         {
-          "name": "C. Actualizar Datos Maestros",
+          "name": "Actualizar Producto",
           "request": {
             "method": "PUT",
             "header": [
@@ -143,8 +212,22 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"1 (Edición Especial)\",\n  \"descripcion\": \"The Beatles 1 - Álbum Remasterizado 2015\",\n  \"precio\": 65000.00,\n  \"artistaBanda\": \"The Beatles\"\n}"
+              "raw": "{\n  \"sku\": \"PROD-001-REV\",\n  \"nombre\": \"Abbey Road Remastered\",\n  \"descripcion\": \"Edición 50 Aniversario revisada\",\n  \"precio\": 68000.00,\n  \"artistaBanda\": \"The Beatles\",\n  \"formatoMusica\": \"Vinilo\",\n  \"tallePrenda\": null,\n  \"color\": null\n}"
             },
+            "url": {
+              "raw": "http://localhost:8080/api/productos/{{producto_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "productos", "{{producto_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Producto",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
             "url": {
               "raw": "http://localhost:8080/api/productos/{{producto_id}}",
               "protocol": "http",
@@ -157,10 +240,24 @@
       ]
     },
     {
-      "name": "4. Movimientos de Stock",
+      "name": "5. Movimientos de Stock",
       "item": [
         {
-          "name": "A. Registrar Movimiento",
+          "name": "Obtener Movimientos por Producto",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": {
+              "raw": "http://localhost:8080/api/movimientos/producto/{{producto_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "movimientos", "producto", "{{producto_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Registrar Nuevo Movimiento",
           "request": {
             "method": "POST",
             "header": [
@@ -169,7 +266,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productoId\": \"{{producto_id}}\",\n  \"cantidad\": 5,\n  \"tipo\": \"EGRESO\",\n  \"motivo\": \"Venta directa\"\n}"
+              "raw": "{\n  \"productoId\": \"{{producto_id}}\",\n  \"cantidad\": 5,\n  \"tipo\": \"INGRESO\",\n  \"motivo\": \"Ajuste tras auditoría general\"\n}"
             },
             "url": {
               "raw": "http://localhost:8080/api/movimientos",
@@ -179,20 +276,72 @@
               "path": ["api", "movimientos"]
             }
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "6. Imágenes de Producto",
+      "item": [
         {
-          "name": "B. Historial de Auditoría",
+          "name": "Obtener Imágenes por Producto",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
             "url": {
-              "raw": "http://localhost:8080/api/movimientos/producto/{{producto_id}}",
+              "raw": "http://localhost:8080/api/imagenes/producto/{{producto_id}}",
               "protocol": "http",
               "host": ["localhost"],
               "port": "8080",
-              "path": ["api", "movimientos", "producto", "{{producto_id}}"]
+              "path": ["api", "imagenes", "producto", "{{producto_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Registrar Nueva Imagen",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productoId\": \"{{producto_id}}\",\n  \"urlImagen\": \"https://ejemplo.com/imagen.jpg\",\n  \"esPortada\": true,\n  \"orden\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/imagenes",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "imagenes"]
+            }
+          }
+        },
+        {
+          "name": "Marcar como Portada (Principal)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": {
+              "raw": "http://localhost:8080/api/imagenes/{{imagen_id}}/principal",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "imagenes", "{{imagen_id}}", "principal"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Imagen",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt_token}}" }],
+            "url": {
+              "raw": "http://localhost:8080/api/imagenes/{{imagen_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "imagenes", "{{imagen_id}}"]
             }
           }
         }
