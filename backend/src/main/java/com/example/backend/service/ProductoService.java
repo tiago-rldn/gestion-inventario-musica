@@ -29,10 +29,10 @@ public class ProductoService {
     private final UsuarioRepository usuarioRepository;
     private final CategoriaRepository categoriaRepository;
 
-    public ProductoService(ProductoRepository productoRepository, UsuarioRepository usuarioRepository) {
+    public ProductoService(ProductoRepository productoRepository, UsuarioRepository usuarioRepository, CategoriaRepository categoriaRepository) {
         this.productoRepository = productoRepository;
         this.usuarioRepository = usuarioRepository;
-        this.categoriaRepository = null;
+        this.categoriaRepository = categoriaRepository;
     }
 
     public List<ProductoResumenResponse> getAllProductos() {

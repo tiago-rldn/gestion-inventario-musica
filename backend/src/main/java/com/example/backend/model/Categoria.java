@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,6 +21,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "categorias")
+@SQLDelete(sql = "UPDATE categorias SET activo = false WHERE id = ?")
+@SQLRestriction("activo = true")
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,6 +44,9 @@ public class Categoria {
 
     @OneToMany(mappedBy = "categoria")
     private List<Producto> productos = new ArrayList<>();
+
+    @Column(nullable = false)
+    private boolean activo = true;
 
     public Categoria() {
     }

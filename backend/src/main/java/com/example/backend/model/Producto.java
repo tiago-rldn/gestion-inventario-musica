@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -22,6 +25,8 @@ import jakarta.persistence.Version;
 
 @Entity
 @Table(name = "productos")
+@SQLDelete(sql = "UPDATE productos SET activo = false WHERE id = ? AND version = ?")
+@SQLRestriction("activo = true")
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -69,6 +74,9 @@ public class Producto {
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties
     private List<MovimientoStock> historialStock = new ArrayList<>();
+
+    @Column(nullable = false)
+    private boolean activo = true;
 
     public Producto() {}
 
@@ -186,4 +194,11 @@ public class Producto {
         this.historialStock = historialStock;
     }
 
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
 }
