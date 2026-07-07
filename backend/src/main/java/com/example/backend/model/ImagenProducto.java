@@ -54,7 +54,7 @@ public class ImagenProducto {
         this.urlImagen = urlImagen;
     }
 
-    public Boolean getEsPortada() {
+    public Boolean isPortada() {
         return esPortada;
     }
 
