@@ -1,0 +1,202 @@
+{
+  "info": {
+    "name": "API Gestión Inventario Música",
+    "description": "Colección adaptada para la importación en ATAC Terminal Client",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Autenticación",
+      "item": [
+        {
+          "name": "A. Iniciar Sesión (Login)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"prueba\",\n  \"password\": \"prueba\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Categorías",
+      "item": [
+        {
+          "name": "A. Obtener Árbol de Categorías",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/categorias",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "categorias"]
+            }
+          }
+        },
+        {
+          "name": "B. Crear Categoría Raíz",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Música\",\n  \"descripcion\": \"Formatos físicos de audio y video\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/categorias",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "categorias"]
+            }
+          }
+        },
+        {
+          "name": "C. Crear Subcategoría",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Vinilo\",\n  \"descripcion\": \"Formato físico musical\",\n  \"categoriaPadre\": {\n    \"id\": \"{{categoria_padre_id}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/categorias",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "categorias"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Productos",
+      "item": [
+        {
+          "name": "A. Consultar Rama de Productos",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/productos/categoria/{{categoria_id}}/rama",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "productos", "categoria", "{{categoria_id}}", "rama"]
+            }
+          }
+        },
+        {
+          "name": "B. Registrar Nuevo Producto",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"THBTLS-1-VIN\",\n  \"nombre\": \"1\",\n  \"descripcion\": \"The Beatles 1 - Álbum Remasterizado\",\n  \"precio\": 60000.00,\n  \"cantidadStock\": 20,\n  \"artistaBanda\": \"The Beatles\",\n  \"formatoMusica\": \"Vinilo\",\n  \"categoria\": {\n    \"id\": \"{{categoria_id}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/productos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "productos"]
+            }
+          }
+        },
+        {
+          "name": "C. Actualizar Datos Maestros",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"1 (Edición Especial)\",\n  \"descripcion\": \"The Beatles 1 - Álbum Remasterizado 2015\",\n  \"precio\": 65000.00,\n  \"artistaBanda\": \"The Beatles\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/productos/{{producto_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "productos", "{{producto_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Movimientos de Stock",
+      "item": [
+        {
+          "name": "A. Registrar Movimiento",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productoId\": \"{{producto_id}}\",\n  \"cantidad\": 5,\n  \"tipo\": \"EGRESO\",\n  \"motivo\": \"Venta directa\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/movimientos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "movimientos"]
+            }
+          }
+        },
+        {
+          "name": "B. Historial de Auditoría",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/movimientos/producto/{{producto_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "movimientos", "producto", "{{producto_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
