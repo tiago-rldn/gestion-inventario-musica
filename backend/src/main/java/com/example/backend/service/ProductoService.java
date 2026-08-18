@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -11,11 +12,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.backend.dto.ActualizarProductoRequest;
+import com.example.backend.dto.ImagenResponse;
 import com.example.backend.dto.MovimientoRequest;
 import com.example.backend.dto.NewProductoRequest;
 import com.example.backend.dto.ProductoDetalleResponse;
 import com.example.backend.dto.ProductoResumenResponse;
 import com.example.backend.model.Categoria;
+import com.example.backend.model.ImagenProducto;
 import com.example.backend.model.MovimientoStock;
 import com.example.backend.model.Producto;
 import com.example.backend.model.Usuario;
@@ -37,10 +40,12 @@ public class ProductoService {
         this.categoriaRepository = categoriaRepository;
     }
 
+    @Transactional(readOnly = true)
     public Page<ProductoResumenResponse> getAllProductos(Pageable pageable) {
         return productoRepository.findAll(pageable).map(this::mapearResumenResponse);
     }
 
+    @Transactional(readOnly = true)
     public ProductoDetalleResponse getProductoById(UUID id) {
         Producto producto = productoRepository.findById(id).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
         return mapearDetalleResponse(producto);
@@ -58,7 +63,6 @@ public class ProductoService {
         producto.setPrecio(request.precio());
         producto.setCantidadStock(request.cantidadStock());
         producto.setArtistaBanda(request.artistaBanda());
-        producto.setFormatoMusica(request.formatoMusica());
         producto.setTallePrenda(request.tallePrenda());
         producto.setColor(request.color());
         producto.setCategoria(categoria);
@@ -74,6 +78,7 @@ public class ProductoService {
         productoRepository.deleteById(id);
     }
 
+    @Transactional
     public ProductoDetalleResponse updateProducto(UUID id, ActualizarProductoRequest request) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
@@ -83,7 +88,6 @@ public class ProductoService {
         if (request.descripcion() != null) producto.setDescripcion(request.descripcion());
         if (request.precio() != null) producto.setPrecio(request.precio());
         if (request.artistaBanda() != null) producto.setArtistaBanda(request.artistaBanda());
-        if (request.formatoMusica() != null) producto.setFormatoMusica(request.formatoMusica());
         if (request.tallePrenda() != null) producto.setTallePrenda(request.tallePrenda());
         if (request.color() != null) producto.setColor(request.color());
 
@@ -148,14 +152,40 @@ public class ProductoService {
         return new ProductoDetalleResponse(
                 p.getId(), p.getSku(), p.getNombre(), p.getDescripcion(),
                 p.getPrecio(), p.getCantidadStock(), p.getArtistaBanda(),
-                p.getFormatoMusica(), p.getTallePrenda(), p.getColor()
+                p.getTallePrenda(), p.getColor(),
+                p.getImagenes().stream()
+                        .sorted(Comparator.comparing(ImagenProducto::getOrden))
+                        .map(this::mapearImagenResponse)
+                        .toList()
         );
     }
 
     private ProductoResumenResponse mapearResumenResponse(Producto p) {
         return new ProductoResumenResponse(
                 p.getId(), p.getSku(), p.getNombre(), p.getPrecio(), p.getCantidadStock(),
-                p.getArtistaBanda(), p.getFormatoMusica(), p.getTallePrenda(), p.getColor()
+                p.getArtistaBanda(), p.getTallePrenda(), p.getColor(), obtenerUrlPortada(p)
+        );
+    }
+
+    private String obtenerUrlPortada(Producto p) {
+        return p.getImagenes().stream()
+                .filter(ImagenProducto::isPortada)
+                .findFirst()
+                .map(ImagenProducto::getUrlImagen)
+                .orElseGet(() -> p.getImagenes().stream()
+                        .min(Comparator.comparing(ImagenProducto::getOrden))
+                        .map(ImagenProducto::getUrlImagen)
+                        .orElse(null));
+    }
+
+    private ImagenResponse mapearImagenResponse(ImagenProducto imagen) {
+        return new ImagenResponse(
+                imagen.getId(),
+                imagen.getProducto().getId(),
+                imagen.getUrlImagen(),
+                imagen.isPortada(),
+                imagen.getOrden(),
+                imagen.getPublicIdCloudinary()
         );
     }
 }

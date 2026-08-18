@@ -51,8 +51,6 @@ public class Producto {
     @Column(name = "artista_banda", length = 100)
     private String artistaBanda;
 
-    @Column(name = "formato_musica", length = 50)
-    private String formatoMusica;
 
     @Column(name = "talle_prenda", length = 10)
     private String tallePrenda;
@@ -136,14 +134,6 @@ public class Producto {
 
     public void setArtistaBanda(String artistaBanda) {
         this.artistaBanda = artistaBanda;
-    }
-
-    public String getFormatoMusica() {
-        return formatoMusica;
-    }
-
-    public void setFormatoMusica(String formatoMusica) {
-        this.formatoMusica = formatoMusica;
     }
 
     public String getTallePrenda() {

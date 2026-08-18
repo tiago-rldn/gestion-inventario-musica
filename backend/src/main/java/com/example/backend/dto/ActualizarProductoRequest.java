@@ -8,7 +8,6 @@ public record ActualizarProductoRequest(
     String descripcion,
     BigDecimal precio,
     String artistaBanda,
-    String formatoMusica,
     String tallePrenda,
     String color
 ) {}

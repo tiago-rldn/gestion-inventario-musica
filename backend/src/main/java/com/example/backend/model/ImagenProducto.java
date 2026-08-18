@@ -24,6 +24,9 @@ public class ImagenProducto {
     @Column(name = "url_imagen", nullable = false, length = 500)
     private String urlImagen;
 
+    @Column(name = "public_id_cloudinary", length = 200)
+    private String publicIdCloudinary;
+
     @Column(name = "es_portada", nullable = false)
     private Boolean esPortada = false;
 
@@ -52,6 +55,14 @@ public class ImagenProducto {
 
     public void setUrlImagen(String urlImagen) {
         this.urlImagen = urlImagen;
+    }
+
+    public String getPublicIdCloudinary() {
+        return publicIdCloudinary;
+    }
+
+    public void setPublicIdCloudinary(String publicIdCloudinary) {
+        this.publicIdCloudinary = publicIdCloudinary;
     }
 
     public Boolean isPortada() {

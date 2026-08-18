@@ -7,5 +7,6 @@ public record ImagenResponse(
     UUID productoId,
     String urlImagen,
     Boolean esPortada,
-    Integer orden
+    Integer orden,
+    String publicIdCloudinary
 ) {}

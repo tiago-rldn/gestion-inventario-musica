@@ -10,7 +10,7 @@ public record ProductoResumenResponse(
     BigDecimal precio,
     int cantidadStock,
     String artistaBanda,
-    String formatoMusica,
     String tallePrenda,
-    String color
+    String color,
+    String urlPortada
 ) {}

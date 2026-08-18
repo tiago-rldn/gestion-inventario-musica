@@ -9,13 +9,16 @@ import com.example.backend.dto.NewCategoriaRequest;
 import com.example.backend.dto.NewCategoriaResponse;
 import com.example.backend.model.Categoria;
 import com.example.backend.repository.CategoriaRepository;
+import com.example.backend.repository.ProductoRepository;
 
 @Service
 public class CategoriaService {
     private final CategoriaRepository categoriaRepository;
+    private final ProductoRepository productoRepository;
 
-    public CategoriaService(CategoriaRepository categoriaRepository) {
+    public CategoriaService(CategoriaRepository categoriaRepository, ProductoRepository productoRepository) {
         this.categoriaRepository = categoriaRepository;
+        this.productoRepository = productoRepository;
     }
 
     public List<CategoriaTreeResponse> getAllCategorias() {
@@ -52,8 +55,8 @@ public class CategoriaService {
                 cat.getId(),
                 cat.getNombre(),
                 cat.getDescripcion(),
-                cat.getSubcategorias().stream().map(this::mapearArbol).toList(), // Recursividad
-                cat.getProductos().size() // Contamos los productos
+                cat.getSubcategorias().stream().map(this::mapearArbol).toList(),
+                productoRepository.findProductosPorRamaCategoria(cat.getId()).size()
         );
     }
 

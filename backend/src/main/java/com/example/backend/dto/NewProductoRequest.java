@@ -10,7 +10,6 @@ public record NewProductoRequest(
     BigDecimal precio,
     Integer cantidadStock,
     String artistaBanda,
-    String formatoMusica,
     String tallePrenda,
     String color,
     UUID categoriaId

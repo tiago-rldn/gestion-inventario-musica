@@ -1,7 +1,10 @@
 package com.example.backend.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
+
+import com.example.backend.dto.ImagenResponse;
 
 public record ProductoDetalleResponse(
     UUID id,
@@ -11,7 +14,7 @@ public record ProductoDetalleResponse(
     BigDecimal precio,
     Integer cantidadStock,
     String artistaBanda,
-    String formatoMusica,
     String tallePrenda,
-    String color
+    String color,
+    List<ImagenResponse> imagenes
 ) {}
