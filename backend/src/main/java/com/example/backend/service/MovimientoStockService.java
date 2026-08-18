@@ -37,6 +37,14 @@ public class MovimientoStockService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<MovimientoResponse> obtenerPorUsuario(UUID usuarioId) {
+        List<MovimientoStock> historial = movimientoStockRepository.findByUsuarioIdOrderByFechaHoraDesc(usuarioId);
+        return historial.stream()
+                .map(this::mapearMovimiento)
+                .toList();
+    }
+
     @Transactional
     public MovimientoResponse registrarMovimiento(MovimientoRequest request, String username) {
         // 1. Obtener el producto actual y el usuario

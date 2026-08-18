@@ -2,6 +2,7 @@ package com.example.backend.repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +25,11 @@ public interface ImagenProductoRepository extends JpaRepository<ImagenProducto, 
     Integer siguienteOrden(@Param("productoId") UUID productoId);
 
     long countByProductoId(UUID productoId);
+
+    @Query("SELECT i FROM ImagenProducto i WHERE i.producto.id = :productoId AND i.esPortada = true")
+    Optional<ImagenProducto> findPortadaByProductoId(@Param("productoId") UUID productoId);
+
+    @Modifying
+    @Query("UPDATE ImagenProducto i SET i.orden = :nuevoOrden WHERE i.id = :id")
+    void actualizarOrden(@Param("id") UUID id, @Param("nuevoOrden") Integer nuevoOrden);
 }

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.MovimientoRequest;
 import com.example.backend.dto.MovimientoResponse;
-import com.example.backend.model.MovimientoStock;
 import com.example.backend.service.MovimientoStockService;
 
 @RestController
@@ -31,6 +30,11 @@ public class MovimientoStockController {
     @GetMapping("/producto/{productoId}")
     public ResponseEntity<List<MovimientoResponse>> getMovimientosByProducto(@PathVariable UUID productoId) {
         return ResponseEntity.ok(movimientoStockService.obtenerPorProducto(productoId));
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<MovimientoResponse>> getMovimientosByUsuario(@PathVariable UUID usuarioId) {
+        return ResponseEntity.ok(movimientoStockService.obtenerPorUsuario(usuarioId));
     }
 
     @PostMapping

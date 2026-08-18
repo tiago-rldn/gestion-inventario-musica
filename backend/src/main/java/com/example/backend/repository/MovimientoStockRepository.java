@@ -9,4 +9,5 @@ import com.example.backend.model.MovimientoStock;
 
 public interface MovimientoStockRepository extends JpaRepository<MovimientoStock, UUID> {
     List<MovimientoStock> findByProductoIdOrderByFechaHoraDesc(UUID productoId);
+    List<MovimientoStock> findByUsuarioIdOrderByFechaHoraDesc(UUID usuarioId);
 }
