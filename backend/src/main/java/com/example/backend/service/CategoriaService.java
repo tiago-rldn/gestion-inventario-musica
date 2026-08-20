@@ -2,6 +2,7 @@ package com.example.backend.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.dto.CategoriaTreeResponse;
@@ -27,7 +28,10 @@ public class CategoriaService {
     }
 
     public NewCategoriaResponse getCategoriaById(java.util.UUID id) {
-        return mapearRespuesta(categoriaRepository.findById(id).orElseThrow(() -> new RuntimeException("Categoría no encontrada")));
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+        productoRepository.findProductosPorRamaCategoria(categoria.getId());
+        return mapearRespuesta(categoria);
     }
 
     public NewCategoriaResponse createCategoria(NewCategoriaRequest categoria) {
@@ -51,6 +55,7 @@ public class CategoriaService {
     }
 
     private CategoriaTreeResponse mapearArbol(Categoria cat) {
+        productoRepository.findProductosPorRamaCategoria(cat.getId());
         return new CategoriaTreeResponse(
                 cat.getId(),
                 cat.getNombre(),

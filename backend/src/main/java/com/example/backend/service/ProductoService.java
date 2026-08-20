@@ -97,9 +97,10 @@ public class ProductoService {
 
     @Transactional(readOnly = true)
     public List<ProductoResumenResponse> findProductosPorRamaCategoria(UUID categoriaId) {
-        return productoRepository.findProductosPorRamaCategoria(categoriaId).stream()
+        return productoRepository.findProductosPorRamaCategoria(categoriaId)
+                .stream()
                 .map(this::mapearResumenResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional

@@ -59,7 +59,7 @@ public class ProductoController {
 
     @GetMapping("/categoria/{categoriaId}")
     public ResponseEntity<List<ProductoResumenResponse>> getProductosPorRamaCategoria(@PathVariable UUID categoriaId) {
-        return ResponseEntity.ok((productoService.findProductosPorRamaCategoria(categoriaId)));
+        return ResponseEntity.ok(productoService.findProductosPorRamaCategoria(categoriaId));
     }
 
     @PutMapping("/{id}")
