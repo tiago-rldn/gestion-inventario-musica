@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.dto.UsuarioTreeResponse;
 import com.example.backend.model.Usuario;
 import com.example.backend.service.UsuarioService;
 
@@ -24,8 +25,8 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> getAllUsuarios() {
-        List<Usuario> usuarios = usuarioService.getAllUsuarios();
+    public ResponseEntity<List<UsuarioTreeResponse>> getAllUsuarios() {
+        List<UsuarioTreeResponse> usuarios = usuarioService.getAllUsuarios();
         return ResponseEntity.ok(usuarios);
     }
     

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.backend.dto.UsuarioTreeResponse;
 import com.example.backend.model.Usuario;
 import com.example.backend.repository.UsuarioRepository;
 
@@ -17,8 +18,9 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public List<Usuario> getAllUsuarios() {
-        return usuarioRepository.findAll();
+    public List<UsuarioTreeResponse> getAllUsuarios() {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        return usuarios.stream().map(this::mapearArbol).toList();
     }
 
     @Transactional
@@ -27,4 +29,10 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    private UsuarioTreeResponse mapearArbol(Usuario usuario) {
+        return new UsuarioTreeResponse(
+                usuario.getId(),
+                usuario.getUsername()
+        );
+    }
 }

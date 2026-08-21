@@ -42,12 +42,15 @@ public class ProductoService {
 
     @Transactional(readOnly = true)
     public Page<ProductoResumenResponse> getAllProductos(Pageable pageable) {
-        return productoRepository.findAll(pageable).map(this::mapearResumenResponse);
+        return productoRepository.findAllWithActiveCategories(pageable).map(this::mapearResumenResponse);
     }
 
     @Transactional(readOnly = true)
     public ProductoDetalleResponse getProductoById(UUID id) {
         Producto producto = productoRepository.findById(id).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        if (producto.getCategoria() == null || !producto.getCategoria().isActivo()) {
+            throw new RuntimeException("Producto no encontrado");
+        }
         return mapearDetalleResponse(producto);
     }
 

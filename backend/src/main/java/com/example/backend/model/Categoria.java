@@ -119,4 +119,8 @@ public class Categoria {
         productos.remove(producto);
         producto.setCategoria(null);
     }
+
+    public boolean isActivo() {
+        return activo;
+    }
 }

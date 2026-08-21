@@ -36,3 +36,15 @@ export async function actualizarProducto(id, data) {
   const { data: response } = await api.put(`/productos/${id}`, data)
   return response
 }
+
+// Agregar un nuevo producto (POST).
+export async function agregarProducto(data) {
+  const { data: response } = await api.post('/productos', data)
+  return response
+}
+
+// Eliminar un producto por ID (DELETE) (SOFT DELETE).
+export async function eliminarProducto(id) {
+  const { data: response } = await api.delete(`/productos/${id}`)
+  return response
+}

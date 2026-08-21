@@ -3,9 +3,10 @@ package com.example.backend.repository;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import com.example.backend.model.Producto;
 
@@ -21,4 +22,12 @@ public interface ProductoRepository extends JpaRepository<Producto, UUID>{
         INNER JOIN CategoriaTree ct ON p.categoria_id = ct.id
         """, nativeQuery = true)
     List<Producto> findProductosPorRamaCategoria(UUID categoriaId);
+
+    // Find all products with active categories
+    @Query(value = """
+        SELECT p.* FROM productos p
+        INNER JOIN categorias c ON p.categoria_id = c.id
+        WHERE c.activo = true
+        """, nativeQuery = true)
+    Page<Producto> findAllWithActiveCategories(Pageable pageable);
 }
