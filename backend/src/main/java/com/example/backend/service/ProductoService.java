@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,11 +96,14 @@ public class ProductoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductoResumenResponse> findProductosPorRamaCategoria(UUID categoriaId) {
-        return productoRepository.findProductosPorRamaCategoria(categoriaId)
-                .stream()
+    public Page<ProductoResumenResponse> findProductosPorRamaCategoria(UUID categoriaId, Pageable pageable) {
+        List<Producto> todos = productoRepository.findProductosPorRamaCategoria(categoriaId);
+        int start = Math.min((int) pageable.getOffset(), todos.size());
+        int end = Math.min(start + pageable.getPageSize(), todos.size());
+        List<ProductoResumenResponse> contenido = todos.subList(start, end).stream()
                 .map(this::mapearResumenResponse)
                 .toList();
+        return new PageImpl<>(contenido, pageable, todos.size());
     }
 
     @Transactional

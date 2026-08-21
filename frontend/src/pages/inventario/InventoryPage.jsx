@@ -1,11 +1,7 @@
 import { useEffect, useMemo, useState, useCallback } from 'react'
-import {
-  Search, LayoutGrid, List, Package, AlertTriangle,
-  ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Eye,
-} from 'lucide-react'
+import { Package } from 'lucide-react'
 import { getProductos, getProductosPorCategoria } from '../../api/productos'
 import { getCategorias } from '../../api/categorias'
-import ProductModal from '../../components/ProductModal'
 import Header from './components/Header'
 import Filtros from './components/Filtros'
 import ErrorBanner from './components/ErrorBanner'
@@ -15,7 +11,6 @@ import Paginador from './components/Paginador'
 import ModalIntegration from './components/ModalIntegration'
 
 const UMBRAL_STOCK_BAJO = 5
-const OPCIONES_TAMANIO = [12, 24, 48]
 
 function useResponsiveColumns() {
   const [columnas, setColumnas] = useState(4)
@@ -66,29 +61,11 @@ function SkeletonGrid({ columnas }) {
   )
 }
 
-function SkeletonTabla() {
-  return (
-    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-      <div className="h-12 bg-gray-50 animate-pulse" />
-      {[...Array(5)].map((_, i) => (
-        <div key={i} className="h-16 border-b border-gray-50 animate-pulse flex items-center px-6 gap-4">
-          <div className="h-4 bg-gray-100 rounded w-20" />
-          <div className="h-4 bg-gray-100 rounded w-40" />
-          <div className="h-4 bg-gray-100 rounded w-24" />
-          <div className="h-4 bg-gray-100 rounded w-16" />
-          <div className="h-5 bg-gray-100 rounded-full w-20" />
-          <div className="h-8 bg-gray-100 rounded-lg w-16" />
-        </div>
-      ))}
-    </div>
-  )
-}
-
 export default function InventoryPage() {
   const columnas = useResponsiveColumns()
   const sizeDefault = columnas * 3
 
-  const [todosLosProductos, setTodosLosProductos] = useState([])
+  const [productos, setProductos] = useState([])
   const [categorias, setCategorias] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
@@ -99,9 +76,8 @@ export default function InventoryPage() {
 
   const [page, setPage] = useState(0)
   const [size, setSize] = useState(sizeDefault)
-  const [totalServerElements, setTotalServerElements] = useState(0)
-  const [totalServerPages, setTotalServerPages] = useState(0)
-  const [usandoCliente, setUsandoCliente] = useState(false)
+  const [totalElementos, setTotalElementos] = useState(0)
+  const [totalPaginasServer, setTotalPaginasServer] = useState(0)
 
   const [vista, setVista] = useState('grid')
 
@@ -116,7 +92,10 @@ export default function InventoryPage() {
     setSize(sizeDefault)
   }, [sizeDefault])
 
-  const hayFiltros = busqueda || filtroStock !== 'todos' || categoriaId !== null
+  // Modo cliente SOLO cuando no hay categoría y hay búsqueda/filtro de stock.
+  // Con categoría seleccionada → paginación server-side (igual que "todas").
+  const hayFiltrosCliente = busqueda || filtroStock !== 'todos'
+  const modoCliente = !categoriaId && hayFiltrosCliente
 
   useEffect(() => {
     let cancelado = false
@@ -124,25 +103,28 @@ export default function InventoryPage() {
       setCargando(true)
       setError('')
       try {
-        if (hayFiltros) {
-          let all
-          if (categoriaId) {
-            all = await getProductosPorCategoria(categoriaId)
-          } else {
-            const pageData = await getProductos(0, 9999)
-            all = pageData.content || []
-          }
+        if (modoCliente) {
+          // Sin categoría + búsqueda/stock → traer todo y filtrar en cliente
+          const pageData = await getProductos(0, 9999)
           if (!cancelado) {
-            setTodosLosProductos(all)
-            setUsandoCliente(true)
+            setProductos(pageData.content || [])
+            setTotalElementos(pageData.totalElements || 0)
+          }
+        } else if (categoriaId) {
+          // Categoría seleccionada → paginación server-side (CTE recursivo)
+          const pageData = await getProductosPorCategoria(categoriaId, page, size)
+          if (!cancelado) {
+            setProductos(pageData.content || [])
+            setTotalElementos(pageData.totalElements || 0)
+            setTotalPaginasServer(pageData.totalPages || 0)
           }
         } else {
+          // Sin filtros → paginación server-side general
           const pageData = await getProductos(page, size)
           if (!cancelado) {
-            setTodosLosProductos(pageData.content || [])
-            setTotalServerElements(pageData.totalElements || 0)
-            setTotalServerPages(pageData.totalPages || 0)
-            setUsandoCliente(false)
+            setProductos(pageData.content || [])
+            setTotalElementos(pageData.totalElements || 0)
+            setTotalPaginasServer(pageData.totalPages || 0)
           }
         }
       } catch (err) {
@@ -153,11 +135,12 @@ export default function InventoryPage() {
     }
     cargar()
     return () => { cancelado = true }
-  }, [page, size, hayFiltros, categoriaId])
+  }, [page, size, modoCliente, categoriaId])
 
+  // Filtrado en cliente (solo en modo cliente)
   const productosFiltrados = useMemo(() => {
-    if (!usandoCliente || !Array.isArray(todosLosProductos)) return todosLosProductos
-    return todosLosProductos.filter((p) => {
+    if (!modoCliente || !Array.isArray(productos)) return productos
+    return productos.filter((p) => {
       if (busqueda) {
         const q = busqueda.toLowerCase()
         const matchNombre = p.nombre?.toLowerCase().includes(q)
@@ -170,28 +153,27 @@ export default function InventoryPage() {
       if (filtroStock === 'sin_stock' && p.cantidadStock !== 0) return false
       return true
     })
-  }, [todosLosProductos, usandoCliente, busqueda, filtroStock])
+  }, [productos, modoCliente, busqueda, filtroStock])
 
-  const totalPaginas = usandoCliente
-    ? Math.ceil(productosFiltrados.length / size)
-    : totalServerPages
+  const totalPaginas = modoCliente
+    ? Math.max(1, Math.ceil(productosFiltrados.length / size))
+    : totalPaginasServer
 
-  const totalElementos = usandoCliente
-    ? productosFiltrados.length
-    : totalServerElements
+  // Página segura: nunca excede el rango válido (safety net ante page stale)
+  const pageSegura = Math.min(page, Math.max(0, totalPaginas - 1))
 
   const productosVisibles = useMemo(() => {
-    if (usandoCliente && Array.isArray(productosFiltrados)) {
-      const start = page * size
+    if (modoCliente && Array.isArray(productosFiltrados)) {
+      const start = pageSegura * size
       return productosFiltrados.slice(start, start + size)
     }
-    // Server mode o datos no disponibles: retornar array garantizado
     return Array.isArray(productosFiltrados) ? productosFiltrados : []
-  }, [productosFiltrados, usandoCliente, page, size])
+  }, [productosFiltrados, modoCliente, pageSegura, size])
 
+  // Reset de página ante cualquier cambio de filtro o tamaño
   useEffect(() => {
     setPage(0)
-  }, [busqueda, filtroStock, size])
+  }, [busqueda, filtroStock, size, categoriaId])
 
   const categoriasAplanadas = useMemo(() => aplanarCategorias(categorias), [categorias])
 
@@ -214,18 +196,24 @@ export default function InventoryPage() {
     const recargar = async () => {
       try {
         if (categoriaId) {
-          const productos = await getProductosPorCategoria(categoriaId)
-          setTodosLosProductos(productos)
-        } else if (!hayFiltros) {
+          const pageData = await getProductosPorCategoria(categoriaId, page, size)
+          setProductos(pageData.content || [])
+          setTotalElementos(pageData.totalElements || 0)
+          setTotalPaginasServer(pageData.totalPages || 0)
+        } else if (modoCliente) {
+          const pageData = await getProductos(0, 9999)
+          setProductos(pageData.content || [])
+          setTotalElementos(pageData.totalElements || 0)
+        } else {
           const pageData = await getProductos(page, size)
-          setTodosLosProductos(pageData.content || [])
-          setTotalServerElements(pageData.totalElements || 0)
-          setTotalServerPages(pageData.totalPages || 0)
+          setProductos(pageData.content || [])
+          setTotalElementos(pageData.totalElements || 0)
+          setTotalPaginasServer(pageData.totalPages || 0)
         }
       } catch { /* silently ignore */ }
     }
     recargar()
-  }, [categoriaId, hayFiltros, page, size])
+  }, [categoriaId, modoCliente, page, size])
 
   return (
     <div className="space-y-6">
@@ -233,7 +221,7 @@ export default function InventoryPage() {
         titulo="Inventario"
         vista={vista}
         setVista={setVista}
-        hayFiltros={hayFiltros}
+        hayFiltros={hayFiltrosCliente || categoriaId !== null}
       />
 
       <Filtros
@@ -242,7 +230,7 @@ export default function InventoryPage() {
         categorias={categorias}
         setCategorias={setCategorias}
         categoriaId={categoriaId}
-        setCategoriaId={setCategoriaId}
+        onCategoriaChange={handleCategoriaChange}
         filtroStock={filtroStock}
         setFiltroStock={setFiltroStock}
         categoriasAplanadas={categoriasAplanadas}
@@ -257,7 +245,7 @@ export default function InventoryPage() {
           <Package size={48} className="mx-auto text-gray-300 mb-4" />
           <h3 className="text-lg font-medium text-dark mb-1">Sin resultados</h3>
           <p className="text-gray-500 text-sm">
-            {hayFiltros
+            {hayFiltrosCliente || categoriaId !== null
               ? 'No se encontraron productos con los filtros aplicados.'
               : 'No hay productos en el inventario.'}
           </p>
@@ -279,7 +267,7 @@ export default function InventoryPage() {
 
       {!cargando && productosVisibles.length > 0 && (
         <Paginador
-          page={page}
+          page={pageSegura}
           totalPaginas={totalPaginas}
           totalElementos={totalElementos}
           size={size}

@@ -3,7 +3,7 @@ import { Search } from "lucide-react"
 export default function InventoryPageFiltros({
   busqueda, setBusqueda,
   categorias, setCategorias,
-  categoriaId, setCategoriaId,
+  categoriaId, onCategoriaChange,
   filtroStock, setFiltroStock,
   categoriasAplanadas
 }) {
@@ -22,7 +22,7 @@ export default function InventoryPageFiltros({
         </div>
         <select
           value={categoriaId || 'todas'}
-          onChange={(e) => setCategoriaId(e.target.value === 'todas' ? null : e.target.value)}
+          onChange={(e) => onCategoriaChange(e.target.value === 'todas' ? null : e.target.value)}
           className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary min-w-[180px]"
         >
           <option value="todas">Todas las categorías</option>

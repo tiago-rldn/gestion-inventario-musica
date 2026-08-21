@@ -46,7 +46,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
+            // El token es válido, la petición continúa
+            filterChain.doFilter(request, response);
+        } else {
+            // El token está presente pero es inválido o ha expirado.
+            // Se detiene la cadena y se devuelve estrictamente un 401 Unauthorized.
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Token inválido o expirado\"}");
+            response.getWriter().flush();
+            return;
         }
-        filterChain.doFilter(request, response);
     }
 }

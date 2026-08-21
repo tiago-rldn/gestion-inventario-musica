@@ -1,12 +1,16 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { Disc3, LayoutDashboard, Package, LogOut, Menu } from 'lucide-react'
+import { Disc3, LayoutDashboard, Package, LogOut, Menu, User, SlidersHorizontal, ChartNoAxesCombined } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { obtenerUsuarioDelToken } from '../utils/jwt'
 
 const NAV_ITEMS = [
+  // { ruta: '/dashboard', etiqueta: 'Dashboard', icono: LayoutDashboard },
   { ruta: '/dashboard', etiqueta: 'Dashboard', icono: LayoutDashboard },
   { ruta: '/inventario', etiqueta: 'Inventario', icono: Package },
+  { ruta: '/staff', etiqueta: 'Staff', icono: User },
+  { ruta: '/estadisticas', etiqueta: 'Estadísticas', icono: ChartNoAxesCombined },
+  { ruta: '/configuracion', etiqueta: 'Configuración', icono: SlidersHorizontal }
 ]
 
 export function Layout() {

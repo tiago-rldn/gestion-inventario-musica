@@ -1,14 +1,6 @@
-import { Search, LayoutGrid, List, Package, AlertTriangle, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Eye } from 'lucide-react'
+import { Package } from 'lucide-react'
 
-const UMBRAL_STOCK_BAJO = 5
-
-function estadoStock(cantidad) {
-  if (cantidad === 0) return { etiqueta: 'Sin stock', clase: 'bg-red-100 text-red-800', punto: 'bg-red-500' }
-  if (cantidad <= UMBRAL_STOCK_BAJO) return { etiqueta: 'Stock bajo', clase: 'bg-amber-100 text-amber-800', punto: 'bg-amber-500' }
-  return { etiqueta: 'En stock', clase: 'bg-emerald-100 text-emerald-800', punto: 'bg-emerald-500' }
-}
-
-export default function InventoryPageProductGrid({ productosVisibles, abrirModal, vista }) {
+export default function InventoryPageProductGrid({ productosVisibles, estadoStock, abrirModal, vista }) {
   const columnas = vista === 'grid' ? 3 : 1
   return (
     <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-${columnas} gap-4`}>

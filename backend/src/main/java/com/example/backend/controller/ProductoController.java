@@ -1,6 +1,5 @@
 package com.example.backend.controller;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -58,8 +57,12 @@ public class ProductoController {
     }
 
     @GetMapping("/categoria/{categoriaId}")
-    public ResponseEntity<List<ProductoResumenResponse>> getProductosPorRamaCategoria(@PathVariable UUID categoriaId) {
-        return ResponseEntity.ok(productoService.findProductosPorRamaCategoria(categoriaId));
+    public ResponseEntity<Page<ProductoResumenResponse>> getProductosPorRamaCategoria(
+            @PathVariable UUID categoriaId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size
+    ) {
+        return ResponseEntity.ok(productoService.findProductosPorRamaCategoria(categoriaId, PageRequest.of(page, size)));
     }
 
     @PutMapping("/{id}")

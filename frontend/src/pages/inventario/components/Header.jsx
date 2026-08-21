@@ -1,4 +1,4 @@
-import { Search, LayoutGrid, List, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Eye } from 'lucide-react'
+import { LayoutGrid, List } from 'lucide-react'
 
 export default function InventoryPageHeader({ titulo = 'Inventario', vista, setVista, hayFiltros }) {
   return (
